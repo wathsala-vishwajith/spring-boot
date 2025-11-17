@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<!--
+    Home Page Template
+    ==================
+    This is the PUBLIC landing page - no authentication required.
+
+    LESSON 4: Understanding Thymeleaf Templates
+    ===========================================
+
+    Thymeleaf Namespace:
+    - xmlns:th="http://www.thymeleaf.org" enables Thymeleaf processing
+    - xmlns:sec="http://www.thymeleaf.org/extras/spring-security" enables Spring Security integration
+
+    Thymeleaf Attributes:
+    - th:* attributes are processed by Thymeleaf on the server
+    - After processing, they're replaced with standard HTML
+    - Examples: th:text, th:href, th:if, th:each
+
+    Why Thymeleaf is beginner-friendly:
+    1. Natural templates: You can open this file directly in a browser without running the server
+    2. Familiar syntax: Looks like HTML with extra attributes
+    3. Good error messages: Tells you exactly what went wrong
+    4. Spring integration: Works seamlessly with Spring MVC and Spring Security
+-->
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spring Security Example - Home</title>
+    <style>
+        /* Simple CSS for better presentation */
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .container {
+            background-color: #f4f4f4;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            border-bottom: 3px solid #4CAF50;
+            padding-bottom: 10px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            margin-top: 20px;
+            transition: background-color 0.3s;
+        }
+        .btn:hover {
+            background-color: #45a049;
+        }
+        .info-box {
+            background-color: #e7f3fe;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .warning-box {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        code {
+            background-color: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to Spring Security Example</h1>
+
+        <p>
+            This is the <strong>public home page</strong>. You can access this page without logging in
+            because we configured it to be publicly accessible in <code>WebSecurityConfig.java</code>.
+        </p>
+
+        <div class="info-box">
+            <strong>What you're learning:</strong><br>
+            This page demonstrates that Spring Security allows you to have both public and
+            protected pages in the same application. Not everything needs to be behind a login!
+        </div>
+
+        <!--
+            Conditional Content Based on Authentication Status
+            ===================================================
+
+            sec:authorize="isAuthenticated()"
+            - This is a Thymeleaf Spring Security tag
+            - Checks if the user is currently authenticated (logged in)
+            - If true, the content inside is rendered
+            - If false, the content is not included in the response at all
+
+            This is perfect for showing/hiding content based on login status.
+        -->
+        <div sec:authorize="isAuthenticated()">
+            <div class="info-box">
+                <strong>You are logged in as: <span sec:authentication="name">Username</span></strong><br>
+                <!--
+                    sec:authentication="name"
+                    - Retrieves the username from the current Authentication object
+                    - Same as calling authentication.getName() in Java
+                    - Other properties you can access: principal, credentials, authorities
+                -->
+                Since you're authenticated, you can access the protected content!
+            </div>
+        </div>
+
+        <div sec:authorize="!isAuthenticated()">
+            <div class="warning-box">
+                <strong>You are not logged in.</strong><br>
+                To access protected content, you need to log in first.
+            </div>
+        </div>
+
+        <!--
+            th:href="@{/hello}"
+            ===================
+            - @{...} is Thymeleaf's URL expression syntax
+            - It automatically handles:
+              1. Adding context path if your app runs under one (e.g., /myapp/hello)
+              2. URL encoding
+              3. Session tracking (adding jsessionid if needed)
+
+            Why not just use href="/hello"?
+            - If your app runs under a context path like "/myapp", plain "/hello" won't work
+            - You'd need to manually add the context path: "/myapp/hello"
+            - @{/hello} handles this automatically
+
+            When the user clicks this link:
+            1. Browser sends GET request to /hello
+            2. Spring Security checks if user is authenticated
+            3. If YES: User sees the hello page
+            4. If NO: User is redirected to /login (with returnUrl=/hello)
+            5. After successful login, user is redirected back to /hello
+        -->
+        <a th:href="@{/hello}" class="btn">Try to Access Protected Content</a>
+
+        <div style="margin-top: 30px; padding-top: 20px; border-top: 2px solid #ddd;">
+            <h2>How This Works (Technical Details)</h2>
+
+            <h3>1. URL Authorization</h3>
+            <p>
+                In <code>WebSecurityConfig.java</code>, we configured:
+            </p>
+            <pre style="background-color: #f4f4f4; padding: 10px; border-radius: 4px; overflow-x: auto;"><code>.authorizeHttpRequests(authorize -> authorize
+    .requestMatchers("/", "/home").permitAll()  // ← This page is public
+    .anyRequest().authenticated()                // ← Everything else requires login
+)</code></pre>
+
+            <h3>2. View Controller Mapping</h3>
+            <p>
+                In <code>MvcConfig.java</code>, we mapped "/" to this template:
+            </p>
+            <pre style="background-color: #f4f4f4; padding: 10px; border-radius: 4px;"><code>registry.addViewController("/").setViewName("home");</code></pre>
+
+            <h3>3. Template Resolution</h3>
+            <p>
+                Spring Boot automatically configures Thymeleaf to:
+            </p>
+            <ul>
+                <li>Look for templates in <code>src/main/resources/templates/</code></li>
+                <li>Add <code>.html</code> extension automatically</li>
+                <li>Process all <code>th:*</code> and <code>sec:*</code> attributes</li>
+                <li>Return the final HTML to the browser</li>
+            </ul>
+        </div>
+
+        <div style="margin-top: 20px;">
+            <h3>Test Credentials</h3>
+            <p>When you need to log in, use these credentials:</p>
+            <ul>
+                <li><strong>Username:</strong> user</li>
+                <li><strong>Password:</strong> password</li>
+            </ul>
+            <p>
+                <em>These credentials are defined in <code>WebSecurityConfig.java</code>
+                and stored in memory for this demo.</em>
+            </p>
+        </div>
+    </div>
+</body>
+</html>

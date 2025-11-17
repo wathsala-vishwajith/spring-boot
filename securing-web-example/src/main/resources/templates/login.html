@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<!--
+    Custom Login Page
+    =================
+    This is a custom login page for our Spring Security application.
+
+    LESSON 5: Understanding Spring Security Login Process
+    =====================================================
+
+    Default vs Custom Login Page:
+    - Spring Security provides a default login page automatically
+    - It's functional but basic and doesn't match your app's design
+    - Custom login pages allow you to:
+      1. Match your application's branding and design
+      2. Add additional fields or information
+      3. Provide better user experience
+      4. Add custom validation messages
+
+    How Spring Security Knows This is the Login Page:
+    - We configured it in WebSecurityConfig.java:
+      .formLogin(form -> form.loginPage("/login").permitAll())
+-->
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Spring Security Example</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .login-container {
+            background-color: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 400px;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        .subtitle {
+            color: #666;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: bold;
+        }
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+        }
+        input[type="text"]:focus,
+        input[type="password"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        button:hover {
+            transform: translateY(-2px);
+        }
+        button:active {
+            transform: translateY(0);
+        }
+        .alert {
+            padding: 12px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+        .alert-danger {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .alert-success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .info-box {
+            background-color: #e7f3fe;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .home-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .home-link a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        .home-link a:hover {
+            text-decoration: underline;
+        }
+        code {
+            background-color: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h1>Sign In</h1>
+        <p class="subtitle">Spring Security Example Application</p>
+
+        <!--
+            Error Message Display
+            ======================
+
+            th:if="${param.error}"
+            - Checks if the URL has an "error" query parameter
+            - Example: /login?error
+            - Spring Security adds this parameter when authentication fails
+            - This is a Thymeleaf conditional: content only appears if condition is true
+
+            Why check for query parameter instead of a model attribute?
+            - Spring Security's default behavior is to redirect to /login?error on failure
+            - We're following that convention for consistency
+            - If you want custom error handling, you can configure it in WebSecurityConfig
+
+            What causes authentication to fail?
+            1. Wrong username or password
+            2. Account locked
+            3. Account disabled
+            4. Account expired
+            5. Credentials expired
+        -->
+        <div th:if="${param.error}" class="alert alert-danger">
+            <strong>Login Failed!</strong><br>
+            Invalid username or password. Please try again.
+        </div>
+
+        <!--
+            Logout Success Message
+            =======================
+
+            th:if="${param.logout}"
+            - Checks if the URL has a "logout" query parameter
+            - Example: /login?logout
+            - Spring Security adds this parameter after successful logout
+            - Provides feedback to the user that logout was successful
+
+            This is important for user experience:
+            - Confirms the action was completed
+            - Prevents confusion ("Am I still logged in?")
+            - Provides clear feedback
+        -->
+        <div th:if="${param.logout}" class="alert alert-success">
+            <strong>Logged Out Successfully!</strong><br>
+            You have been logged out. Log in again to continue.
+        </div>
+
+        <!--
+            The Login Form
+            ==============
+
+            CRITICAL DETAILS FOR BEGINNERS:
+
+            1. th:action="@{/login}"
+               - Submits form to /login endpoint
+               - Spring Security's UsernamePasswordAuthenticationFilter listens on this URL
+               - @{...} handles context path automatically
+
+            2. method="post"
+               - MUST be POST (not GET)
+               - GET is not secure for credentials (shows in URL, browser history, server logs)
+               - Spring Security only processes POST requests for login
+
+            3. CSRF Token
+               - Thymeleaf automatically adds a hidden CSRF token field
+               - Looks like: <input type="hidden" name="_csrf" value="token-here">
+               - Required by Spring Security's CSRF protection
+               - Without it, login will fail with 403 Forbidden
+
+            4. Field Names: "username" and "password"
+               - These are the DEFAULT field names expected by Spring Security
+               - UsernamePasswordAuthenticationFilter looks for these names
+               - If you want different names, configure them:
+                 .formLogin(form -> form
+                     .usernameParameter("email")
+                     .passwordParameter("pass")
+                 )
+        -->
+        <form th:action="@{/login}" method="post">
+            <!--
+                Username Field
+                ==============
+                - name="username" is REQUIRED (unless you change it in configuration)
+                - Spring Security will extract the value using request.getParameter("username")
+                - The "required" attribute provides basic client-side validation
+            -->
+            <div class="form-group">
+                <label for="username">Username:</label>
+                <input type="text"
+                       id="username"
+                       name="username"
+                       placeholder="Enter username"
+                       required
+                       autofocus>
+                <!--
+                    autofocus attribute:
+                    - Automatically focuses this field when page loads
+                    - Better user experience - user can start typing immediately
+                    - No need to click the field first
+                -->
+            </div>
+
+            <!--
+                Password Field
+                ==============
+                - name="password" is REQUIRED (unless you change it in configuration)
+                - type="password" masks the input for security
+                - Browser won't autocomplete password fields by default (unless you add autocomplete="on")
+            -->
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password"
+                       id="password"
+                       name="password"
+                       placeholder="Enter password"
+                       required>
+            </div>
+
+            <button type="submit">Sign In</button>
+        </form>
+
+        <!--
+            Test Credentials Information Box
+            =================================
+            This helps users test the application. In a real application, you wouldn't
+            display credentials on the login page!
+        -->
+        <div class="info-box">
+            <strong>Demo Credentials:</strong><br>
+            <strong>Username:</strong> <code>user</code><br>
+            <strong>Password:</strong> <code>password</code>
+            <p style="margin-top: 10px; font-size: 12px;">
+                These credentials are defined in <code>WebSecurityConfig.java</code>
+                and stored in memory for this demonstration.
+            </p>
+        </div>
+
+        <div class="home-link">
+            <a th:href="@{/}">← Back to Home</a>
+        </div>
+    </div>
+
+    <!--
+        Educational Section: What Happens When You Submit This Form?
+        =============================================================
+
+        1. FORM SUBMISSION
+           - Browser sends POST request to /login
+           - Request body contains: username=user&password=password&_csrf=token
+
+        2. CSRF VALIDATION
+           - Spring Security's CsrfFilter validates the CSRF token
+           - If invalid, returns 403 Forbidden
+           - If valid, request continues to next filter
+
+        3. AUTHENTICATION FILTER
+           - UsernamePasswordAuthenticationFilter intercepts the request
+           - Extracts username and password from request parameters
+           - Creates UsernamePasswordAuthenticationToken (unauthenticated)
+
+        4. AUTHENTICATION MANAGER
+           - AuthenticationManager receives the authentication token
+           - Delegates to AuthenticationProvider (usually DaoAuthenticationProvider)
+
+        5. USER DETAILS LOOKUP
+           - DaoAuthenticationProvider calls UserDetailsService.loadUserByUsername("user")
+           - In our case: InMemoryUserDetailsManager returns the UserDetails
+           - If user not found, throws UsernameNotFoundException
+
+        6. PASSWORD VERIFICATION
+           - DaoAuthenticationProvider uses PasswordEncoder
+           - Calls: passwordEncoder.matches(rawPassword, encodedPassword)
+           - BCrypt verifies the password against the stored hash
+
+        7. AUTHENTICATION SUCCESS
+           If password matches:
+           a) Creates fully authenticated UsernamePasswordAuthenticationToken
+           b) Stores it in SecurityContext
+           c) SecurityContext is stored in HttpSession
+           d) Session ID is sent to browser as cookie (JSESSIONID)
+           e) Redirects to:
+              - The originally requested URL (if there was one), OR
+              - The default success URL (usually "/")
+
+        8. AUTHENTICATION FAILURE
+           If password doesn't match:
+           a) AuthenticationException is thrown
+           b) Security filter catches it
+           c) Redirects to /login?error
+           d) Error message is displayed (that's what we show with th:if="${param.error}")
+
+        9. SUBSEQUENT REQUESTS
+           - Browser sends JSESSIONID cookie with each request
+           - SecurityContextPersistenceFilter loads SecurityContext from session
+           - Request proceeds with authenticated user
+           - No need to log in again until session expires or logout
+    -->
+</body>
+</html>
