@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Home - Basic Authentication</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #667eea;
+        }
+        .user-info {
+            background: #f0f7ff;
+            padding: 20px;
+            border-radius: 5px;
+            border-left: 4px solid #667eea;
+            margin: 20px 0;
+        }
+        .authorities {
+            background: #fff9e6;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .authority-badge {
+            display: inline-block;
+            background: #4CAF50;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 3px;
+            margin: 5px;
+            font-size: 14px;
+        }
+        .button {
+            display: inline-block;
+            padding: 12px 24px;
+            margin: 10px 5px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #764ba2;
+        }
+        .btn-danger {
+            background: #f44336;
+            color: white;
+        }
+        .btn-danger:hover {
+            background: #d32f2f;
+        }
+        .btn-secondary {
+            background: #607d8b;
+            color: white;
+        }
+        .btn-secondary:hover {
+            background: #455a64;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>✅ Authentication Successful!</h1>
+
+    <div class="user-info">
+        <h3>User Information</h3>
+        <p><strong>Username:</strong> <span th:text="${username}">user</span></p>
+        <p><strong>Authentication Type:</strong> Basic (Username/Password)</p>
+        <p><strong>Session:</strong> Active</p>
+    </div>
+
+    <div class="authorities">
+        <h3>Granted Authorities</h3>
+        <div>
+            <span th:each="authority : ${authorities}"
+                  th:text="${authority.authority}"
+                  class="authority-badge">ROLE_USER</span>
+        </div>
+    </div>
+
+    <div>
+        <h3>Available Actions</h3>
+        <a href="/" class="button btn-secondary">Home</a>
+        <a sec:authorize="hasRole('ADMIN')" href="/basic/admin" class="button btn-primary">Admin Panel</a>
+        <form th:action="@{/logout}" method="post" style="display: inline;">
+            <button type="submit" class="button btn-danger">Logout</button>
+        </form>
+    </div>
+
+    <div style="margin-top: 30px; padding: 20px; background: #e8f5e9; border-radius: 5px;">
+        <h4 style="margin-top: 0; color: #2e7d32;">💡 What just happened?</h4>
+        <ol>
+            <li>You submitted your credentials via the login form</li>
+            <li>Spring Security authenticated you using the UserDetailsService</li>
+            <li>Your password was verified using BCrypt</li>
+            <li>A security context was created with your authentication details</li>
+            <li>You now have access to protected resources based on your roles</li>
+        </ol>
+    </div>
+</div>
+</body>
+</html>

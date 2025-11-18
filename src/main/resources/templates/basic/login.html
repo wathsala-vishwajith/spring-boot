@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Login - Basic Authentication</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .login-container {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 400px;
+        }
+        h2 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: 500;
+        }
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+        input[type="text"]:focus, input[type="password"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .checkbox-group input[type="checkbox"] {
+            margin-right: 8px;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #764ba2;
+        }
+        .error {
+            background: #ffebee;
+            color: #c62828;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border-left: 4px solid #c62828;
+        }
+        .success {
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border-left: 4px solid #2e7d32;
+        }
+        .demo-users {
+            background: #fff9e6;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+        .demo-users h4 {
+            margin-top: 0;
+            color: #f57c00;
+        }
+        .demo-users ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        .oauth-section {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+        }
+        .oauth-button {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 10px;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        .oauth-github {
+            background: #24292e;
+            color: white;
+        }
+        .oauth-github:hover {
+            background: #1a1e22;
+        }
+        .oauth-google {
+            background: #4285f4;
+            color: white;
+        }
+        .oauth-google:hover {
+            background: #357ae8;
+        }
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #667eea;
+            text-decoration: none;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<div class="login-container">
+    <h2>🔐 Login</h2>
+    <p class="subtitle">Basic Authentication Example</p>
+
+    <div th:if="${param.error}" class="error">
+        Invalid username or password.
+    </div>
+
+    <div th:if="${param.logout}" class="success">
+        You have been logged out successfully.
+    </div>
+
+    <form th:action="@{/login}" method="post">
+        <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" required autofocus placeholder="Enter username">
+        </div>
+
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" required placeholder="Enter password">
+        </div>
+
+        <div class="checkbox-group">
+            <input type="checkbox" id="remember-me" name="remember-me">
+            <label for="remember-me" style="margin-bottom: 0;">Remember Me</label>
+        </div>
+
+        <button type="submit">Sign In</button>
+    </form>
+
+    <div class="demo-users">
+        <h4>Demo Credentials</h4>
+        <ul>
+            <li><strong>admin</strong> / password</li>
+            <li><strong>user</strong> / password</li>
+            <li><strong>john</strong> / password</li>
+        </ul>
+    </div>
+
+    <div class="oauth-section">
+        <p style="text-align: center; color: #666; margin-bottom: 15px;">Or sign in with:</p>
+        <a href="/oauth2/authorization/github" class="oauth-button oauth-github">
+            Login with GitHub
+        </a>
+        <a href="/oauth2/authorization/google" class="oauth-button oauth-google">
+            Login with Google
+        </a>
+    </div>
+
+    <a href="/" class="back-link">← Back to Home</a>
+</div>
+</body>
+</html>
