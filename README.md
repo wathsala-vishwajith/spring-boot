@@ -287,6 +287,7 @@ Client certificate-based authentication using SSL/TLS mutual authentication.
 git clone https://github.com/wathsala-vishwajith/spring-boot.git
 cd spring-boot
 git checkout claude/spring-security-auth-examples-01LQY15N8SDgUWnNYA6LJuBf
+cd authenticate
 ```
 
 ### Build the Project
@@ -362,42 +363,43 @@ Access the H2 console at: `http://localhost:8080/h2-console`
 
 ```
 spring-boot/
-├── src/
-│   ├── main/
-│   │   ├── java/com/example/security/
-│   │   │   ├── SpringSecurityAuthExamplesApplication.java
-│   │   │   ├── model/
-│   │   │   │   └── User.java
-│   │   │   ├── repository/
-│   │   │   │   └── UserRepository.java
-│   │   │   ├── config/
-│   │   │   │   ├── SecurityConfig.java
-│   │   │   │   └── MainController.java
-│   │   │   └── authentication/
-│   │   │       ├── basic/              # Username/Password
-│   │   │       ├── oauth2/             # OAuth 2.0 Login
-│   │   │       ├── saml/               # SAML 2.0
-│   │   │       ├── cas/                # CAS
-│   │   │       ├── rememberme/         # Remember Me
-│   │   │       ├── jaas/               # JAAS
-│   │   │       ├── preauth/            # Pre-Authentication
-│   │   │       └── x509/               # X.509
-│   │   └── resources/
-│   │       ├── application.yml
-│   │       ├── data.sql
-│   │       └── templates/
-│   │           ├── index.html
-│   │           ├── basic/
-│   │           ├── oauth2/
-│   │           ├── rememberme/
-│   │           └── ...
-│   └── test/
-└── pom.xml
+└── authenticate/                       # Main project directory
+    ├── pom.xml
+    └── src/
+        ├── main/
+        │   ├── java/com/example/security/
+        │   │   ├── SpringSecurityAuthExamplesApplication.java
+        │   │   ├── model/
+        │   │   │   └── User.java
+        │   │   ├── repository/
+        │   │   │   └── UserRepository.java
+        │   │   ├── config/
+        │   │   │   ├── SecurityConfig.java
+        │   │   │   └── MainController.java
+        │   │   └── authentication/
+        │   │       ├── basic/              # Username/Password
+        │   │       ├── oauth2/             # OAuth 2.0 Login
+        │   │       ├── saml/               # SAML 2.0
+        │   │       ├── cas/                # CAS
+        │   │       ├── rememberme/         # Remember Me
+        │   │       ├── jaas/               # JAAS
+        │   │       ├── preauth/            # Pre-Authentication
+        │   │       └── x509/               # X.509
+        │   └── resources/
+        │       ├── application.yml
+        │       ├── data.sql
+        │       └── templates/
+        │           ├── index.html
+        │           ├── basic/
+        │           ├── oauth2/
+        │           ├── rememberme/
+        │           └── ...
+        └── test/
 ```
 
 ## ⚙️ Configuration
 
-All configuration is centralized in `src/main/resources/application.yml`.
+All configuration is centralized in `authenticate/src/main/resources/application.yml`.
 
 ### Enable/Disable Authentication Methods
 
@@ -448,7 +450,10 @@ auth:
 
 ### Run Unit Tests
 
+Navigate to the authenticate directory first:
+
 ```bash
+cd authenticate
 ./mvnw test
 ```
 
