@@ -1,0 +1,97 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: performance-optimization-demo
+
+  # H2 Database Configuration
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+    # HikariCP Connection Pool Optimization
+    hikari:
+      # Connection pool sizing (recommended: cores * 2 + effective_spindle_count)
+      maximum-pool-size: 10
+      minimum-idle: 5
+      # Connection timeout
+      connection-timeout: 30000
+      # Max lifetime of connection in pool (30 minutes)
+      max-lifetime: 1800000
+      # Idle timeout (10 minutes)
+      idle-timeout: 600000
+      # Pool name for identification in logs
+      pool-name: HikariCP-Performance-Pool
+      # Leak detection threshold (2 seconds)
+      leak-detection-threshold: 2000
+      # Connection test query
+      connection-test-query: SELECT 1
+      # Auto-commit
+      auto-commit: true
+      # Register MBeans for JMX monitoring
+      register-mbeans: true
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        # Enable batch processing
+        jdbc:
+          batch_size: 20
+        order_inserts: true
+        order_updates: true
+        # Enable query cache
+        cache:
+          use_query_cache: true
+          use_second_level_cache: true
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+# Actuator Configuration for Monitoring
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,metrics,prometheus,threaddump,heapdump,info
+  endpoint:
+    health:
+      show-details: always
+    metrics:
+      enabled: true
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+    tags:
+      application: ${spring.application.name}
+
+# Logging Configuration
+logging:
+  level:
+    com.example.performance: INFO
+    com.zaxxer.hikari: DEBUG
+    org.hibernate: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+
+# Custom Application Properties
+app:
+  async:
+    # Thread pool configuration for CompletableFuture
+    core-pool-size: 5
+    max-pool-size: 10
+    queue-capacity: 100
+    thread-name-prefix: async-executor-
+
+  # Enable virtual threads (Java 21+)
+  virtual-threads:
+    enabled: true
