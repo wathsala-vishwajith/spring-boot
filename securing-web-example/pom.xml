@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!--
+        Parent POM: Spring Boot Starter Parent
+        This provides dependency management and default configurations for Spring Boot applications.
+        We're using Spring Boot 3.2.0 which requires Java 17 or higher.
+    -->
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.2.0</version>
+        <relativePath/>
+    </parent>
+
+    <!-- Project Coordinates -->
+    <groupId>com.example</groupId>
+    <artifactId>securing-web</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>securing-web</name>
+    <description>Spring Security Web Application Example for Beginners</description>
+
+    <!-- Java Version Configuration -->
+    <properties>
+        <java.version>17</java.version>
+    </properties>
+
+    <dependencies>
+        <!--
+            Spring Boot Web Starter
+            This brings in everything needed for web development:
+            - Spring MVC for building web applications
+            - Embedded Tomcat server
+            - Jackson for JSON processing
+            - Validation framework
+        -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!--
+            Thymeleaf Template Engine
+            Thymeleaf is a modern server-side Java template engine for web applications.
+            It allows us to create dynamic HTML pages with natural templating.
+            Advantages:
+            - Natural templates (can be opened in browser without running server)
+            - Good integration with Spring Security
+            - Easy to learn syntax
+        -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
+
+        <!--
+            Spring Security
+            This is the core dependency for securing our web application.
+            It provides:
+            - Authentication (who are you?)
+            - Authorization (what are you allowed to do?)
+            - Protection against common attacks (CSRF, Session Fixation, etc.)
+            - Login/Logout functionality
+
+            IMPORTANT FOR BEGINNERS:
+            Just by adding this dependency, Spring Security will:
+            1. Require authentication for ALL endpoints
+            2. Generate a default login page
+            3. Create a default user with username "user" and a random password (printed in console)
+        -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+
+        <!--
+            Thymeleaf Extras for Spring Security
+            This library provides special Thymeleaf tags for Spring Security integration.
+            Examples:
+            - sec:authorize="isAuthenticated()" - Show content only to authenticated users
+            - sec:authentication="name" - Display the logged-in username
+        -->
+        <dependency>
+            <groupId>org.thymeleaf.extras</groupId>
+            <artifactId>thymeleaf-extras-springsecurity6</artifactId>
+        </dependency>
+
+        <!--
+            Spring Boot DevTools (Optional but highly recommended for development)
+            Provides:
+            - Automatic restart when code changes
+            - LiveReload support
+            - Configurations for better development experience
+        -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <scope>runtime</scope>
+            <optional>true</optional>
+        </dependency>
+
+        <!--
+            Spring Boot Test Starter
+            Includes:
+            - JUnit 5 (Jupiter)
+            - Spring Test & Spring Boot Test
+            - AssertJ, Hamcrest, Mockito
+            - JSONassert, JsonPath
+        -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!--
+            Spring Security Test
+            Provides utilities for testing Spring Security:
+            - @WithMockUser annotation for testing with authenticated users
+            - SecurityMockMvcRequestPostProcessors for request testing
+        -->
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!--
+                Spring Boot Maven Plugin
+                This plugin:
+                - Packages the application as an executable JAR
+                - Provides the "spring-boot:run" goal to run the application
+                - Handles dependency management
+            -->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+</project>

@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<!--
+    Hello Page Template - PROTECTED CONTENT
+    ========================================
+    This page can ONLY be accessed by authenticated users.
+
+    What happens when an unauthenticated user tries to access this page?
+    1. Spring Security intercepts the request
+    2. Sees that /hello requires authentication
+    3. Saves the requested URL (/hello) in the session
+    4. Redirects the user to /login
+    5. After successful login, redirects back to /hello
+
+    This is called "redirect after login" or "saved request handling"
+-->
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spring Security Example - Protected Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .container {
+            background-color: #f4f4f4;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            border-bottom: 3px solid #4CAF50;
+            padding-bottom: 10px;
+        }
+        .success-box {
+            background-color: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .user-info {
+            background-color: #e7f3fe;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 10px 10px 10px 0;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        .btn-primary {
+            background-color: #2196F3;
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: #0b7dda;
+        }
+        .btn-logout {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .btn-logout:hover {
+            background-color: #da190b;
+        }
+        code {
+            background-color: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+        .explanation {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Protected Page - Hello!</h1>
+
+        <div class="success-box">
+            <strong>Congratulations!</strong> You successfully accessed a protected page.
+            This means you are authenticated (logged in).
+        </div>
+
+        <!--
+            Displaying User Information
+            ============================
+
+            sec:authentication="name"
+            - Retrieves the authenticated username from the SecurityContext
+            - Equivalent Java code: SecurityContextHolder.getContext().getAuthentication().getName()
+
+            sec:authentication="principal"
+            - Retrieves the entire principal object (usually a UserDetails object)
+            - Contains more detailed information about the user
+
+            sec:authentication="authorities"
+            - Retrieves the user's granted authorities (roles and permissions)
+            - Returns a collection of GrantedAuthority objects
+        -->
+        <div class="user-info">
+            <h2>Your Authentication Information:</h2>
+            <p><strong>Username:</strong> <span sec:authentication="name">User</span></p>
+            <p>
+                <strong>Authorities (Roles):</strong>
+                <span sec:authentication="authorities">[ROLE_USER]</span>
+            </p>
+            <!--
+                Understanding Authorities Display
+                ==================================
+                The authorities will be displayed as: [ROLE_USER]
+
+                Why "ROLE_USER" instead of just "USER"?
+                - In WebSecurityConfig.java, we used: .roles("USER")
+                - Spring Security automatically prefixes roles with "ROLE_"
+                - This is for internal role management
+                - You can check it with: hasRole("USER") - Spring adds the prefix
+                - Or directly with: hasAuthority("ROLE_USER")
+            -->
+        </div>
+
+        <div style="margin-top: 20px;">
+            <a th:href="@{/}" class="btn btn-primary">Go Back to Home</a>
+
+            <!--
+                Logout Form
+                ===========
+
+                Why is logout a form with POST method?
+                - CSRF (Cross-Site Request Forgery) protection
+                - Prevents malicious websites from logging out your users
+                - Example attack without POST:
+                  1. Attacker creates a page with: <img src="http://yoursite.com/logout">
+                  2. When victim visits attacker's page, they're logged out automatically
+                  3. With POST + CSRF token, this attack doesn't work
+
+                The form requires:
+                1. POST method
+                2. CSRF token (automatically added by Thymeleaf)
+
+                th:action="@{/logout}"
+                - Creates a form that submits to /logout
+                - Automatically includes CSRF token
+                - Thymeleaf adds a hidden input like:
+                  <input type="hidden" name="_csrf" value="token-value-here">
+            -->
+            <form th:action="@{/logout}" method="post" style="display: inline;">
+                <button type="submit" class="btn btn-logout">Logout</button>
+            </form>
+        </div>
+
+        <div class="explanation">
+            <h2>What Just Happened? (Behind the Scenes)</h2>
+
+            <h3>1. Request Authorization Check</h3>
+            <p>
+                When you requested <code>/hello</code>, Spring Security checked the authorization rules:
+            </p>
+            <pre style="background-color: #f4f4f4; padding: 10px; border-radius: 4px; overflow-x: auto;"><code>.authorizeHttpRequests(authorize -> authorize
+    .requestMatchers("/", "/home").permitAll()
+    .anyRequest().authenticated()  // ← /hello matched this rule
+)</code></pre>
+
+            <h3>2. Authentication Required</h3>
+            <p>
+                Since <code>/hello</code> requires authentication and you weren't logged in yet,
+                Spring Security:
+            </p>
+            <ol>
+                <li>Saved your requested URL (<code>/hello</code>) in the session</li>
+                <li>Redirected you to <code>/login</code></li>
+            </ol>
+
+            <h3>3. Login Process</h3>
+            <p>
+                When you submitted the login form:
+            </p>
+            <ol>
+                <li>UsernamePasswordAuthenticationFilter intercepted the POST request to <code>/login</code></li>
+                <li>Extracted username and password from the form</li>
+                <li>AuthenticationManager verified credentials using:
+                    <ul>
+                        <li>UserDetailsService to load user details</li>
+                        <li>PasswordEncoder to verify the password</li>
+                    </ul>
+                </li>
+                <li>Created an authenticated Authentication object</li>
+                <li>Stored it in SecurityContext (in the session)</li>
+                <li>Redirected you back to the saved URL (<code>/hello</code>)</li>
+            </ol>
+
+            <h3>4. Session Management</h3>
+            <p>
+                Your authentication is now stored in the HTTP session:
+            </p>
+            <ul>
+                <li>A session cookie (JSESSIONID) is sent to your browser</li>
+                <li>On each request, the cookie is sent back to the server</li>
+                <li>Server retrieves your SecurityContext from the session</li>
+                <li>You remain authenticated until:
+                    <ul>
+                        <li>You log out explicitly</li>
+                        <li>Session expires (default: 30 minutes of inactivity)</li>
+                        <li>Session is invalidated (server restart, manual invalidation)</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <h3>5. CSRF Protection</h3>
+            <p>
+                Notice the logout button is a form with POST method? This is because:
+            </p>
+            <ul>
+                <li>Spring Security enables CSRF protection by default</li>
+                <li>All state-changing requests (POST, PUT, DELETE) require a CSRF token</li>
+                <li>Thymeleaf automatically adds the token to forms</li>
+                <li>This prevents Cross-Site Request Forgery attacks</li>
+            </ul>
+        </div>
+
+        <div style="margin-top: 20px; padding: 15px; background-color: #fff3cd; border-radius: 4px;">
+            <h3>Try This Exercise:</h3>
+            <ol>
+                <li>Click "Logout" below</li>
+                <li>Try to access this page directly: <code>http://localhost:8080/hello</code></li>
+                <li>Observe how Spring Security redirects you to login</li>
+                <li>After logging in, notice how you're automatically returned to this page</li>
+            </ol>
+            <p>
+                This demonstrates Spring Security's "saved request" functionality!
+            </p>
+        </div>
+    </div>
+</body>
+</html>
