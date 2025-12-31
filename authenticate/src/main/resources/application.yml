@@ -1,0 +1,103 @@
+spring:
+  application:
+    name: spring-security-auth-examples
+
+  # H2 Database Configuration
+  datasource:
+    url: jdbc:h2:mem:authdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: password
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+  # OAuth2 Configuration (GitHub example - requires client credentials)
+  security:
+    oauth2:
+      client:
+        registration:
+          github:
+            client-id: ${GITHUB_CLIENT_ID:your-github-client-id}
+            client-secret: ${GITHUB_CLIENT_SECRET:your-github-client-secret}
+            scope:
+              - read:user
+              - user:email
+          google:
+            client-id: ${GOOGLE_CLIENT_ID:your-google-client-id}
+            client-secret: ${GOOGLE_CLIENT_SECRET:your-google-client-secret}
+            scope:
+              - openid
+              - profile
+              - email
+
+    # SAML2 Configuration (example - requires metadata configuration)
+    saml2:
+      relyingparty:
+        registration:
+          example-saml:
+            assertingparty:
+              metadata-uri: ${SAML_METADATA_URI:https://saml.example.com/metadata}
+              entity-id: ${SAML_ENTITY_ID:https://saml.example.com}
+            signing:
+              credentials:
+                - private-key-location: classpath:credentials/rp-private.key
+                  certificate-location: classpath:credentials/rp-certificate.crt
+
+# Server Configuration
+server:
+  port: 8080
+  ssl:
+    enabled: false
+    # For X509 authentication, enable SSL and configure keystore
+    # key-store: classpath:keystore.p12
+    # key-store-password: password
+    # key-store-type: PKCS12
+    # client-auth: need
+
+# Logging
+logging:
+  level:
+    org.springframework.security: DEBUG
+    com.example.security: DEBUG
+
+# CAS Configuration
+cas:
+  server:
+    url: ${CAS_SERVER_URL:https://localhost:8443/cas}
+  service:
+    url: ${CAS_SERVICE_URL:http://localhost:8080}
+
+# Custom properties for authentication examples
+auth:
+  examples:
+    # Enable/disable specific authentication methods for testing
+    basic:
+      enabled: true
+    oauth2:
+      enabled: true
+    saml:
+      enabled: false  # Disabled by default - requires external SAML IdP
+    cas:
+      enabled: false  # Disabled by default - requires CAS server
+    rememberme:
+      enabled: true
+      key: mySecretRememberMeKey
+      token-validity-seconds: 86400  # 1 day
+    jaas:
+      enabled: false  # Disabled by default - requires JAAS configuration
+    preauth:
+      enabled: false  # Disabled by default
+    x509:
+      enabled: false  # Disabled by default - requires SSL configuration

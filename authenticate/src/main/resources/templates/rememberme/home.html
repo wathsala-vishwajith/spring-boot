@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Home - Remember Me</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #11998e;
+        }
+        .user-info {
+            background: #f0f7ff;
+            padding: 20px;
+            border-radius: 5px;
+            border-left: 4px solid #11998e;
+            margin: 20px 0;
+        }
+        .remember-me-badge {
+            background: #4CAF50;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+        .button {
+            display: inline-block;
+            padding: 12px 24px;
+            margin: 10px 5px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        .btn-secondary {
+            background: #607d8b;
+            color: white;
+        }
+        .btn-danger {
+            background: #f44336;
+            color: white;
+        }
+        .info-box {
+            background: #e8f5e9;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>✅ Remember Me Authentication</h1>
+
+    <div class="user-info">
+        <h3>User Information</h3>
+        <p><strong>Username:</strong> <span th:text="${username}">user</span></p>
+        <p><strong>Remember Me:</strong>
+            <span th:if="${rememberMe}" class="remember-me-badge">Active</span>
+            <span th:unless="${rememberMe}">Not Active</span>
+        </p>
+    </div>
+
+    <div>
+        <a href="/" class="button btn-secondary">Home</a>
+        <form th:action="@{/logout}" method="post" style="display: inline;">
+            <button type="submit" class="button btn-danger">Logout</button>
+        </form>
+    </div>
+
+    <div class="info-box">
+        <h4 style="margin-top: 0; color: #2e7d32;">💡 How Remember Me Works</h4>
+        <ol>
+            <li>When you check "Remember Me", a persistent token is generated</li>
+            <li>The token is stored in the database and sent as a cookie to your browser</li>
+            <li>Even after session expiration, the cookie authenticates you automatically</li>
+            <li>Tokens are more secure than storing username/password in cookies</li>
+            <li>You can invalidate tokens by logging out</li>
+        </ol>
+        <p><strong>Try it:</strong> Close your browser completely, then return to this page. If Remember Me is active, you'll still be logged in!</p>
+    </div>
+</div>
+</body>
+</html>

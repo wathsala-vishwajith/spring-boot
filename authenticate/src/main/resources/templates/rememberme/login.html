@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Login - Remember Me Example</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .login-container {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 400px;
+        }
+        h2 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: 500;
+        }
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #fff9e6;
+            border-radius: 5px;
+            border: 2px solid #ffc107;
+        }
+        .checkbox-group input[type="checkbox"] {
+            margin-right: 8px;
+            width: 20px;
+            height: 20px;
+        }
+        .checkbox-group label {
+            margin-bottom: 0;
+            font-size: 16px;
+            color: #f57c00;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #11998e;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #38ef7d;
+        }
+        .info-box {
+            background: #e8f5e9;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #11998e;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+<div class="login-container">
+    <h2>🔐 Remember Me Login</h2>
+    <p class="subtitle">Persistent Authentication Example</p>
+
+    <form th:action="@{/login}" method="post">
+        <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" required autofocus placeholder="Enter username">
+        </div>
+
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" required placeholder="Enter password">
+        </div>
+
+        <div class="checkbox-group">
+            <input type="checkbox" id="remember-me" name="remember-me" checked>
+            <label for="remember-me">Remember Me (Keep me logged in)</label>
+        </div>
+
+        <button type="submit">Sign In</button>
+    </form>
+
+    <div class="info-box">
+        <h4 style="margin-top: 0;">💡 Remember Me Feature</h4>
+        <p>When enabled, you'll stay logged in even after:</p>
+        <ul style="margin: 10px 0; padding-left: 20px;">
+            <li>Closing your browser</li>
+            <li>Session timeout</li>
+            <li>Server restart</li>
+        </ul>
+        <p><small>Try logging in with "remember me" enabled, then close your browser and come back!</small></p>
+    </div>
+
+    <a href="/" class="back-link">← Back to Home</a>
+</div>
+</body>
+</html>
