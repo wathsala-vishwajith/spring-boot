@@ -1,0 +1,19 @@
+# Alternative YAML configuration (you can use either .properties or .yml)
+
+server:
+  port: 9000
+
+spring:
+  application:
+    name: oauth2-jwt-server
+
+  jackson:
+    serialization:
+      indent-output: true
+
+logging:
+  level:
+    root: INFO
+    org.springframework.security: DEBUG
+    org.springframework.security.oauth2: DEBUG
+    com.example.oauth2: DEBUG
